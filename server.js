@@ -26,9 +26,3 @@ app.put('/imageQuery', image.handleImageQuery(knex));
 app.listen(process.env.PORT, () => {
 	console.log(`app is running on port ${process.env.PORT}`);
 });
-
-var knex = require('knex')({
-        connectionString: process.env.DATABASE_URL,
-    ssl: true,
-        }
-});
