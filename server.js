@@ -7,12 +7,8 @@ const register = require('./controllers/register');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 var knex = require('knex')({
-	client: 'pg',
-	connection: {
-		host : '127.0.0.1',
-		user : 'ut',
-		password : '123',
-		database : 'smart-brain'
+	connectionString: process.env.DATABASE_URL,
+    ssl: true,
 	}
 });
 
