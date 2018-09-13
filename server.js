@@ -6,10 +6,9 @@ const signin = require('./controllers/signin');
 const register = require('./controllers/register');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
-var knex = require('knex')({
+const knex = require('knex')({
 	connectionString: process.env.DATABASE_URL,
-    ssl: true,
-	}
+    ssl: true
 });
 
 const app = express();
@@ -26,4 +25,10 @@ app.put('/imageQuery', image.handleImageQuery(knex));
 
 app.listen(process.env.PORT, () => {
 	console.log(`app is running on port ${process.env.PORT}`);
+});
+
+var knex = require('knex')({
+        connectionString: process.env.DATABASE_URL,
+    ssl: true,
+        }
 });
