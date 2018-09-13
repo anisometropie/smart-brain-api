@@ -7,8 +7,11 @@ const register = require('./controllers/register');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 const knex = require('knex')({
-	connectionString: process.env.DATABASE_URL,
-    ssl: true
+	client: 'pg',
+	connection: {
+		connectionString: process.env.DATABASE_URL,
+	    ssl: true
+	}
 });
 
 const app = express();
