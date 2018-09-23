@@ -7,16 +7,16 @@ const handleRegister = (knex, bcrypt) => (req, res) => {
 			hash: hash
 		})
 		.into('login')
-		.returning('email')
 		.then( () => {
 			return trx('users').returning('*').insert({
 				name: name,
 				email: email,
 				joined: new Date()
 			})
-			.then(user => {
-				res.json(user[0]);
-			})
+		})
+		.then(user => {
+			let userInfo = user[0];
+			res.json({userInfo});
 		})
 		.then(trx.commit)
 		.catch(trx.rollback);

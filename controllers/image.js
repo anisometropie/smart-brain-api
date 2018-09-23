@@ -5,31 +5,37 @@ const app = new Clarifai.App({
 
 const handleImageQuery = (knex) => (req, res) => {
 	const { id, imageURL } = req.body;
-	app.models.predict(Clarifai.FACE_DETECT_MODEL, imageURL)
+	let response = {};
+	knex.transaction( trx => {
+		return app.models.predict(Clarifai.FACE_DETECT_MODEL, imageURL)
 		.then(clarifaiResponse => {
-			if(clarifaiResponse) {
-				return knex('users').where('id', id).increment('entries', 1)
-				.returning('entries')
-				.then(entries => {
-					if (entries.length > 0) {
-						res.json([entries[0], clarifaiResponse]);
-					}
-					else {
-						res.json("no such id");
-					}
-				})
-				.catch(err => {
-					console.log(err);
-					res.status(400).json('Database error');
-				});
-			}
-			else {
-				res.status(400).json('Clarifai sent no response');
-			}
+			response.clarifaiResponse = clarifaiResponse;
+			return trx.insert({
+				id: id,
+				url: imageURL,
+				date: new Date()
+			})
+			.into('queries')
 		})
-		.catch(err => {
-			res.status(400).json(err);
-		});
+		.then(() => {
+			return trx('users').where('id', id).increment('entries', 1).returning('entries');
+		})
+		.then(trx.commit)
+		.catch(trx.rollback);
+	})
+	.then(entries => {
+		if (entries.length > 0) {
+			response.entries = entries[0];
+			return knex.select('*').from('queries').where('id', id).orderBy('date', 'desc').limit('10');
+		}
+		else {
+			res.json("no such id");
+		}
+	})
+	.then(lastQueries => {
+		response.lastQueries = lastQueries;
+		res.json(response);
+	});
 };
 
 module.exports = { handleImageQuery };
