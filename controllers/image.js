@@ -26,7 +26,7 @@ const handleImageQuery = (knex) => (req, res) => {
 	.then(entries => {
 		if (entries.length > 0) {
 			response.entries = entries[0];
-			return knex.select('*').from('queries').where('id', id).orderBy('date', 'desc').limit('10');
+			return knex.select('*').from('queries').where('id', id).orderBy('date', 'desc').limit('15');
 		}
 		else {
 			res.json("no such id");

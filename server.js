@@ -7,21 +7,22 @@ const register = require('./controllers/register');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 const leaderboard = require('./controllers/leaderboard');
-// const knex = require('knex')({
-// 	client: 'pg',
-// 	connection: {
-// 	    host : '127.0.0.1',
-// 	    user : 'ut',
-// 	    password : '123',
-// 	    database : 'smart-brain'
-//   }
-// });
+const generalHistory = require('./controllers/generalHistory')
+const databaseStuff = process.env.DATABASE_URL ?
+	{
+		connectionString: process.env.DATABASE_URL,
+		ssl: true
+	}
+	:
+	{
+		host : '127.0.0.1',
+		user : 'ut',
+		password : '123',
+		database : 'smart-brain'
+	}
 const knex = require('knex')({
 	client: 'pg',
-	connection: {
-		connectionString: process.env.DATABASE_URL,
-	    ssl: true
-	}
+	connection: databaseStuff
 });
 
 const app = express();
@@ -35,6 +36,8 @@ app.post('/register', register.handleRegister(knex, bcrypt));
 app.get('/profile/:id', profile.handleProfileGet(knex));
 
 app.get('/leaderboard', leaderboard.handleLeaderboardQuery(knex));
+
+app.get('/generalHistory', generalHistory.handleGeneralHistoryQuery(knex));
 
 app.put('/imageQuery', image.handleImageQuery(knex));
 
